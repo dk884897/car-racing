@@ -43,4 +43,4 @@ def test_racing():
         pickle.dump(simulator, handle, protocol=pickle.HIGHEST_PROTOCOL)
     simulator.plot_simulation()
     simulator.plot_state("ego")
-    simulator.animate(filename="racing", ani_time=40, imagemagick=True)
+    simulator.animate(filename="racing", ani_time=2000, imagemagick=True)

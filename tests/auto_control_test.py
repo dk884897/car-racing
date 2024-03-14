@@ -34,4 +34,4 @@ def test_tracking():
         pickle.dump(simulator, handle, protocol=pickle.HIGHEST_PROTOCOL)
     simulator.plot_simulation()
     simulator.plot_state("ego")
-    simulator.animate(filename="tracking", ani_time=40, imagemagick=True)
+    simulator.animate(filename="tracking", ani_time=2000, imagemagick=True)

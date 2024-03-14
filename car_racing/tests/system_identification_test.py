@@ -25,7 +25,7 @@ def linear_time_invariant():
     ego = offboard.DynamicBicycleModel(name="ego", param=base.CarParam(edgecolor="black"))
     ego.set_state_curvilinear(np.array([0.3, 0, 0, 0, 0, 0]))
     ego.set_state_global(np.array([0.3, 0, 0, 0, 0, 0]))
-    ego.set_ctrl_policy(offboard.PIDTracking(vt=0.5))
+    ego.set_ctrl_policy(offboard.PIDTracking(vt=0.8))
     ego.ctrl_policy.set_timestep(0.1)
     ego.set_track(track)
     # setup simulation

@@ -150,7 +150,7 @@ def racing_overtake(args, file_number):
                                 veh_name = "car" + str(index + 1)
                                 vehicles[index].set_state_curvilinear_func(
                                     t_symbol,
-                                    (1.2 + index * 0.02) * t_symbol + 10.5 + index * 1.5,
+                                    (0.7 + index * 0.02) * t_symbol + 10.5 + index * 1.5,
                                     -0.5 + index * 0.3 + 0.0 * t_symbol,
                                 )
                                 vehicles[index].start_logging()
@@ -240,14 +240,14 @@ def racing_overtake(args, file_number):
                 file_name = "racing_game_random"
             else:
                 file_name = "racing_game_" + track_layout
-            simulator.animate(filename=file_name, ani_time=250, racing_game=True)
+            simulator.animate(filename=file_name, ani_time=2000, racing_game=True)
 
 
 def set_up_ego(timestep, track):
     ego = offboard.DynamicBicycleModel(name="ego", param=base.CarParam(edgecolor="black"), system_param = base.SystemParam())
     ego.set_timestep(timestep)
     # run the pid controller for the first lap to collect data
-    pid_controller = offboard.PIDTracking(vt=0.7, eyt=0.0)
+    pid_controller = offboard.PIDTracking(vt=0.8, eyt=0.0)
     pid_controller.set_timestep(timestep)
     ego.set_ctrl_policy(pid_controller)
     pid_controller.set_track(track)
@@ -256,7 +256,7 @@ def set_up_ego(timestep, track):
     ego.start_logging()
     ego.set_track(track)
     # run mpc-lti controller for the second lap to collect data
-    mpc_lti_param = base.MPCTrackingParam(vt=0.7, eyt=0.0)
+    mpc_lti_param = base.MPCTrackingParam(vt=0.8, eyt=0.0)
     mpc_lti_controller = offboard.MPCTracking(mpc_lti_param, ego.system_param)
     mpc_lti_controller.set_timestep(timestep)
     mpc_lti_controller.set_track(track)

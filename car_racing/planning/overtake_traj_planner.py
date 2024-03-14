@@ -242,6 +242,8 @@ class OvertakeTrajPlanner:
             else:
                 cost_selection[index] += 100
         direction_flag = cost_selection.index(min(cost_selection))
+        if costs[direction_flag] == float("inf"):
+            print("= = = = = = = = = = OVERTAKE TRAJ PLANNER FAILED = = = = = = = = = =")
         traj_xcurv = solution_xvar[direction_flag, :, :].T
         return traj_xcurv, direction_flag, solve_time, solution_xvar
 
@@ -273,7 +275,8 @@ class OvertakeTrajPlanner:
                 + mtimes(self.racing_game_param.matrix_B, opti_uvar[:, index])
             )
             # min and max of vx, ey
-            opti.subject_to(opti_xvar[0, index + 1] <= 5.0)
+            opti.subject_to(opti_xvar[0, index + 1] <= 20.0)
+            opti.subject_to(opti_xvar[0, index + 1] >= 0.0)
             opti.subject_to(opti_xvar[5, index] <= track.width - 0.5 * veh_width)
             opti.subject_to(opti_xvar[5, index] >= -track.width + 0.5 * veh_width)
             # min and max of delta
@@ -333,6 +336,7 @@ class OvertakeTrajPlanner:
             cost += 20 * (opti_xvar[5, j] - ey_bezier) ** 2  # 40
             cost += 20 * (opti_xvar[4, j] - s_tmp) ** 2  # 40
         option = {"verbose": False, "ipopt.print_level": 0, "print_time": 0}
+        s_opts = {"max_iter": 2147483647}
         solution_xvar = np.zeros((X_DIM, num_horizon + 1))
         for j in range(num_horizon):
             s_j = j * ego.xcurv[0] * 0.1 + ego.xcurv[4]
@@ -357,7 +361,7 @@ class OvertakeTrajPlanner:
             opti.set_initial(opti_xvar[0, j], ego.xcurv[0])
         start_time = datetime.datetime.now()
         opti.minimize(cost)
-        opti.solver("ipopt", option)
+        opti.solver("ipopt", option, s_opts)
         try:
             sol = opti.solve()
             solution_xvar = sol.value(opti_xvar)

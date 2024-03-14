@@ -43,7 +43,7 @@ def tracking(args):
         simulator.plot_simulation()
         simulator.plot_state("ego")
     if args["animation"]:
-        simulator.animate(filename="tracking", ani_time=250)
+        simulator.animate(filename="tracking", ani_time=2000)
 
 
 if __name__ == "__main__":

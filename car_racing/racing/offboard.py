@@ -11,7 +11,7 @@ import pickle
 
 # off-board controller
 class PIDTracking(base.PIDTracking):
-    def __init__(self, vt=0.6, eyt=0.0):
+    def __init__(self, vt=0.8, eyt=0.0):
         base.PIDTracking.__init__(self, vt, eyt)
 
 
@@ -266,11 +266,11 @@ class CarRacingSim(base.CarRacingSim):
         plt.show()
 
     def animate(
-        self, filename="untitled", ani_time=400, lap_number=None, racing_game=False, imagemagick=False
+        self, filename="untitled", ani_time=2000, lap_number=None, racing_game=False, imagemagick=False
     ):
         num_veh = len(self.vehicles) - 1
         if racing_game:
-            fig = plt.figure(figsize=(10, 4))
+            fig = plt.figure(figsize=(30, 12))
             ax = fig.add_axes([0.05, 0.07, 0.56, 0.9])
             ax_1 = fig.add_axes([0.63, 0.07, 0.36, 0.9])
             ax_1.set_xticks([])
@@ -443,8 +443,8 @@ class CarRacingSim(base.CarRacingSim):
 
         def update(i):
             if racing_game:
-                ax_1.set_xlim([trajglobs["ego"][i - 1, 4] - 2, trajglobs["ego"][i - 1, 4] + 2])
-                ax_1.set_ylim([trajglobs["ego"][i - 1, 5] - 2, trajglobs["ego"][i - 1, 5] + 2])
+                ax_1.set_xlim([trajglobs["ego"][i - 1, 4] - 6, trajglobs["ego"][i - 1, 4] + 6])
+                ax_1.set_ylim([trajglobs["ego"][i - 1, 5] - 6, trajglobs["ego"][i - 1, 5] + 6])
             for name in patches_vehicles:
                 x, y = trajglobs[name][i - 1, 4], trajglobs[name][i - 1, 5]
                 psi = trajglobs[name][i - 1, 3]
@@ -530,7 +530,7 @@ class CarRacingSim(base.CarRacingSim):
                         local_line.set_data([], [])
                     else:
 
-                        local_line.set_data(local_traj_xglob[i, :, 4], local_traj_xglob[i, :, 5])
+                        local_line.set_data(local_traj_xglob[i, 0:(local_traj_xglob.shape[1]-1), 4], local_traj_xglob[i, 0:(local_traj_xglob.shape[1]-1), 5])
                         local_line.set_color("orange")
                         local_line.set_linewidth(6)
                     if mpc_cbf_prediction[i, :, :].all == 0:
@@ -582,9 +582,10 @@ class CarRacingSim(base.CarRacingSim):
                                     all_local_spline[ii].set_linestyle("-.")
                                     all_local_spline[ii].set_linewidth(1.5)
                                     all_local_traj[ii].set_data(
-                                        all_local_traj_xglob[i][ii, :, 4],
-                                        all_local_traj_xglob[i][ii, :, 5],
+                                        all_local_traj_xglob[i][ii, 0:(all_local_traj_xglob[i].shape[1]-1), 4],
+                                        all_local_traj_xglob[i][ii, 0:(all_local_traj_xglob[i].shape[1]-1), 5],
                                     )
+                                    # TODO: why is the last pose is wrong???
                                     all_local_traj[ii].set_color("brown")
                                     all_local_traj[ii].set_linewidth(1.5)
                             if num_interest < num_veh:

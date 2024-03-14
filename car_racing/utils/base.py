@@ -95,7 +95,7 @@ class ControlBase:
 
 
 class PIDTracking(ControlBase):
-    def __init__(self, vt=0.6, eyt=0.0):
+    def __init__(self, vt=0.8, eyt=0.0):
         ControlBase.__init__(self)
         self.set_target_speed(vt)
         self.set_target_deviation(eyt)
@@ -125,9 +125,9 @@ class LQRTrackingParam:
         matrix_B=np.genfromtxt("data/sys/LTI/matrix_B.csv", delimiter=","),
         matrix_Q=np.diag([10.0, 0.0, 0.0, 4.0, 0.0, 40.0]),
         matrix_R=np.diag([0.1, 0.1]),
-        vt=0.6,
+        vt=0.8,
         eyt=0.0,
-        max_iter=50,
+        max_iter=2147483647,
     ):
         self.matrix_A = matrix_A
         self.matrix_B = matrix_B
@@ -171,9 +171,9 @@ class iLQRRacingParam:
         matrix_B=np.genfromtxt("data/sys/LTI/matrix_B.csv", delimiter=","),
         matrix_Q=np.diag([10.0, 0.0, 0.0, 4.0, 0.0, 40.0]),
         matrix_R=np.diag([0.1, 0.1]),
-        vt=0.6,
+        vt=0.8,
         eyt=0.0,
-        max_iter=150,
+        max_iter=2147483647,
         num_horizon=50,
     ):
         self.matrix_A = matrix_A
@@ -230,7 +230,7 @@ class MPCTrackingParam:
         matrix_B=np.genfromtxt("data/sys/LTI/matrix_B.csv", delimiter=","),
         matrix_Q=np.diag([10.0, 0.0, 0.0, 4.0, 0.0, 40.0]),
         matrix_R=np.diag([0.1, 0.1]),
-        vt=0.6,
+        vt=0.8,
         eyt=0.0,
         num_horizon=10,
     ):
@@ -276,7 +276,7 @@ class MPCCBFRacingParam:
         matrix_B=np.genfromtxt("data/sys/LTI/matrix_B.csv", delimiter=","),
         matrix_Q=np.diag([10.0, 0.0, 0.0, 4.0, 0.0, 40.0]),
         matrix_R=np.diag([0.1, 0.1]),
-        vt=0.6,
+        vt=0.8,
         eyt=0.0,
         num_horizon=10,
         alpha=0.6,
@@ -706,7 +706,7 @@ class CarParam:
 
 
 class SystemParam:
-    def __init__(self, delta_max=0.5, a_max=1.0, v_max=10, v_min=0):
+    def __init__(self, delta_max=0.5, a_max=1.0, v_max=20, v_min=0):
         self.delta_max = delta_max
         self.a_max = a_max
         self.v_max = v_max

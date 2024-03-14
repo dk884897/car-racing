@@ -179,7 +179,7 @@ def lmpc_racing(args):
     if args["animation"]:
 
         file_name = "lmpc_racing_" + track_layout
-        simulator.animate(filename=file_name, ani_time=250, racing_game=True)
+        simulator.animate(filename=file_name, ani_time=2000, racing_game=True)
 
 
 def set_up_ego(timestep, track):
@@ -188,7 +188,7 @@ def set_up_ego(timestep, track):
     )
     ego.set_timestep(timestep)
     # run the pid controller for the first lap to collect data
-    pid_controller = offboard.PIDTracking(vt=0.7, eyt=0.0)
+    pid_controller = offboard.PIDTracking(vt=0.8, eyt=0.0)
     pid_controller.set_timestep(timestep)
     ego.set_ctrl_policy(pid_controller)
     pid_controller.set_track(track)
@@ -197,7 +197,7 @@ def set_up_ego(timestep, track):
     ego.start_logging()
     ego.set_track(track)
     # run mpc-lti controller for the second lap to collect data
-    mpc_lti_param = base.MPCTrackingParam(vt=0.7, eyt=0.0)
+    mpc_lti_param = base.MPCTrackingParam(vt=0.8, eyt=0.0)
     mpc_lti_controller = offboard.MPCTracking(mpc_lti_param, ego.system_param)
     mpc_lti_controller.set_timestep(timestep)
     mpc_lti_controller.set_track(track)

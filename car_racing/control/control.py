@@ -237,8 +237,9 @@ def mpc_lti(xcurv, xtarget, mpc_lti_param, system_param, track):
         )
     # setup solver
     option = {"verbose": False, "ipopt.print_level": 0, "print_time": 0}
+    s_opts = {"max_iter": 2147483647}
     opti.minimize(cost)
-    opti.solver("ipopt", option)
+    opti.solver("ipopt", option, s_opts)
     sol = opti.solve()
     x_pred = sol.value(xvar).T
     u_pred = sol.value(uvar).T
@@ -445,8 +446,9 @@ def mpc_multi_agents(
                     )
     # setup solver
     option = {"verbose": False, "ipopt.print_level": 0, "print_time": 0}
+    s_opts = {"max_iter": 2147483647}
     opti.minimize(cost)
-    opti.solver("ipopt", option)
+    opti.solver("ipopt", option, s_opts)
     try:
         sol = opti.solve()
         x_pred = sol.value(xvar).T
@@ -456,7 +458,7 @@ def mpc_multi_agents(
         )
         lin_input = np.vstack((u_pred[1:, :], u_pred[-1, :]))
     except RuntimeError:
-        print("solver fail")
+        print("- - - - - - - - - - control solver fail - - - - - - - - - -")
         lin_points = np.concatenate(
             (
                 opti.debug.value(xvar).T[1:, :],
@@ -591,8 +593,9 @@ def mpccbf(
         )
     # setup solver
     option = {"verbose": False, "ipopt.print_level": 0, "print_time": 0}
+    s_opts = {"max_iter": 2147483647}
     opti.minimize(cost)
-    opti.solver("ipopt", option)
+    opti.solver("ipopt", option, s_opts)
     sol = opti.solve()
     end_timer = datetime.datetime.now()
     solver_time = (end_timer - start_timer).total_seconds()
@@ -651,6 +654,7 @@ def lmpc(
         )
         # min and max of ey
         opti.subject_to(x[0, i] <= system_param.v_max)
+        opti.subject_to(x[0, i] >= system_param.v_min)
         opti.subject_to(x[5, i] <= lap_width)
         opti.subject_to(-lap_width <= x[5, i])
         # min and max of delta
@@ -690,8 +694,9 @@ def lmpc(
     cost_learning += mtimes(np.array([Qfun_selected_tot]), lambd)
     cost = cost_mpc + cost_learning
     option = {"verbose": False, "ipopt.print_level": 0, "print_time": 0}
+    s_opts = {"max_iter": 2147483647}
     opti.minimize(cost)
-    opti.solver("ipopt", option)
+    opti.solver("ipopt", option, s_opts)
     try:
         sol = opti.solve()
         lin_points = np.concatenate(

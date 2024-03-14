@@ -112,14 +112,14 @@ def test_racing_overtake():
     simulator.plot_simulation()
     simulator.plot_state("ego")
     simulator.plot_input("ego")
-    simulator.animate(filename=file_name, ani_time=50, racing_game=True, imagemagick=True)
+    simulator.animate(filename=file_name, ani_time=2000, racing_game=True, imagemagick=True)
 
 
 def set_up_ego(timestep, track):
     ego = offboard.DynamicBicycleModel(name="ego", param=base.CarParam(edgecolor="black"), system_param = base.SystemParam())
     ego.set_timestep(timestep)
     # run the pid controller for the first lap to collect data
-    pid_controller = offboard.PIDTracking(vt=0.7, eyt=0.0)
+    pid_controller = offboard.PIDTracking(vt=0.8, eyt=0.0)
     pid_controller.set_timestep(timestep)
     ego.set_ctrl_policy(pid_controller)
     pid_controller.set_track(track)
@@ -128,7 +128,7 @@ def set_up_ego(timestep, track):
     ego.start_logging()
     ego.set_track(track)
     # run mpc-lti controller for the second lap to collect data
-    mpc_lti_param = base.MPCTrackingParam(vt=0.7, eyt=0.0)
+    mpc_lti_param = base.MPCTrackingParam(vt=0.8, eyt=0.0)
     mpc_lti_controller = offboard.MPCTracking(mpc_lti_param, ego.system_param)
     mpc_lti_controller.set_timestep(timestep)
     mpc_lti_controller.set_track(track)

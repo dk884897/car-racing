@@ -355,7 +355,7 @@ class ControlBase:
 
 
 class PIDTracking(base.PIDTracking, ControlBase):
-    def __init__(self, vt=0.6, eyt=0.0):
+    def __init__(self, vt=0.8, eyt=0.0):
         base.PIDTracking.__init__(self, vt, eyt)
         ControlBase.__init__(self)
 
