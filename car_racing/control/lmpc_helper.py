@@ -42,11 +42,12 @@ def regression_and_linearization(
     Bi = np.zeros((X_DIM, U_DIM))
     Ci = np.zeros((X_DIM, 1))
     # Compute Index to use
-    h = 5
+    h = 10     # 5     # TODO: What does this do???
     lamb = 0.0
     state_features = [0, 1, 2]
     consider_input = True
     if consider_input == True:
+        # states: vx, vy, wz, psi(epsi), s(X), ey(Y)
         scaling = np.array(
             [
                 [0.1, 0.0, 0.0, 0.0, 0.0],
@@ -220,6 +221,7 @@ def compute_index(
     if index_tot.shape[0] >= max_num_point:
         index = np.argsort(norm)[0:max_num_point]
     else:
+        # Major control bug happens here... index_tot being empty array because of small h value
         index = index_tot
 
     K = (1 - (norm[index] / h) ** 2) * 3 / 4

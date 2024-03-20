@@ -228,6 +228,7 @@ if __name__ == "__main__":
     parser.add_argument("--plotting", action="store_true")
     parser.add_argument("--animation", action="store_true")
     parser.add_argument("--direct-lmpc", action="store_true")
+    parser.add_argument("--pid", action="store_true")
     parser.add_argument("--zero-noise", action="store_true")
     parser.add_argument("--save-trajectory", action="store_true")
     args = vars(parser.parse_args())

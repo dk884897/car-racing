@@ -706,7 +706,7 @@ class CarParam:
 
 
 class SystemParam:
-    def __init__(self, delta_max=0.5, a_max=1.0, v_max=20, v_min=0):
+    def __init__(self, delta_max=0.5, a_max=1.5, v_max=3.5, v_min=0):
         self.delta_max = delta_max
         self.a_max = a_max
         self.v_max = v_max

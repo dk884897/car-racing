@@ -143,7 +143,7 @@ class OvertakePathPlanner:
         target_traj_xcurv = self.get_speed_info(target_traj_xcurv, xcurv_ego, a_target)
         end_timer = datetime.datetime.now()
         solver_time = (end_timer - start_timer).total_seconds()
-        print("local planner solver time: {}".format(solver_time))
+        # print("local planner solver time: {}".format(solver_time))
         target_traj_xglob = get_traj_xglob(target_traj_xcurv, track)
         bezier_line_xcurv = np.zeros((num_horizon + 1, X_DIM))
         bezier_line_xcurv[:, 4:6] = bezier_xcurvs[direction_flag, :, :]
@@ -299,10 +299,11 @@ class OvertakePathPlanner:
                             )
         # get the optimized solution
         option = {"verbose": False, "ipopt.print_level": 0, "print_time": 0}
+        s_opts = {"max_iter": 2147483647}
         solution_ey = np.zeros((num_horizon + 1, num_veh + 1))
         for index in range(num_veh + 1):
             optis[index].minimize(costs[index])
-            optis[index].solver("ipopt", option)
+            optis[index].solver("ipopt", option, s_opts)
             try:
                 sol = optis[index].solve()
                 solution_ey[:, index] = sol.value(opti_vars[index])

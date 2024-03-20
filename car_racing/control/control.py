@@ -21,7 +21,7 @@ def pid(xcurv, xtarget):
     u_next[1] = 1.5 * (vt - xcurv[0])
     end_timer = datetime.datetime.now()
     solver_time = (end_timer - start_timer).total_seconds()
-    print("solver time: {}".format(solver_time))
+    # print("solver time: {}".format(solver_time))
     return u_next
 
 
@@ -57,7 +57,7 @@ def lqr(xcurv, xtarget, lqr_param):
     u_next[1] = uvar[1, 0]
     end_timer = datetime.datetime.now()
     solver_time = (end_timer - start_timer).total_seconds()
-    print("solver time: {}".format(solver_time))
+    # print("solver time: {}".format(solver_time))
     return u_next
 
 
@@ -73,6 +73,7 @@ def ilqr(
     track,
     system_param,
     ):
+    print("ILQR")
     matrix_A = ilqr_param.matrix_A
     matrix_B = ilqr_param.matrix_B
     max_iter = ilqr_param.max_iter
@@ -191,11 +192,12 @@ def ilqr(
                 break
     end_timer = datetime.datetime.now()
     solver_time = (end_timer - start_timer).total_seconds()
-    print("solver time: {}".format(solver_time))
+    # print("solver time: {}".format(solver_time))
     return uvar[:, 0]
 
 
 def mpc_lti(xcurv, xtarget, mpc_lti_param, system_param, track):
+    print("MPC-LTI")
     vt = xtarget[0]
     eyt = xtarget[5]
     num_horizon = mpc_lti_param.num_horizon
@@ -245,7 +247,7 @@ def mpc_lti(xcurv, xtarget, mpc_lti_param, system_param, track):
     u_pred = sol.value(uvar).T
     end_timer = datetime.datetime.now()
     solver_time = (end_timer - start_timer).total_seconds()
-    print("solver time: {}".format(solver_time))
+    # print("solver time: {}".format(solver_time))
     return u_pred[0, :]
 
 
@@ -265,6 +267,7 @@ def mpc_multi_agents(
     sorted_vehicles=None,
     time=None,
 ):
+    print("MPC-MULTI")
     print("overtaking")
     num_horizon = mpc_lti_param.num_horizon_ctrl
     start_timer = datetime.datetime.now()
@@ -279,7 +282,8 @@ def mpc_multi_agents(
     veh_len = vehicles["ego"].param.length
     veh_width = vehicles["ego"].param.width
     # CBF parameter
-    CBF_Flag = True
+    CBF_Flag = False    # True
+    # TODO: do we need Control Barrier Functions? CBF is for stable control, but it causes control solver to fail
     ABC_Flag = True
     if CBF_Flag:
         safety_time = 2.0
@@ -471,7 +475,7 @@ def mpc_multi_agents(
         lin_input = np.vstack((u_pred[1:, :], u_pred[-1, :]))
     end_timer = datetime.datetime.now()
     solver_time = (end_timer - start_timer).total_seconds()
-    print("solver time: {}".format(solver_time))
+    # print("solver time: {}".format(solver_time))
     return u_pred[0, :], x_pred
 
 
@@ -488,6 +492,7 @@ def mpccbf(
     track,
     system_param,
 ):
+    print("MPCCBF")
     vt = xtarget[0]
     eyt = xtarget[5]
     start_timer = datetime.datetime.now()
@@ -599,7 +604,7 @@ def mpccbf(
     sol = opti.solve()
     end_timer = datetime.datetime.now()
     solver_time = (end_timer - start_timer).total_seconds()
-    print("solver time: {}".format(solver_time))
+    # print("solver time: {}".format(solver_time))
     x_pred = sol.value(xvar).T
     u_pred = sol.value(uvar).T
     return u_pred[0, :]
@@ -619,6 +624,7 @@ def lmpc(
     u_old,
     system_param,
 ):
+    print("LMPC")
     start_timer = datetime.datetime.now()
     ss_point_selected_tot = np.empty((X_DIM, 0))
     Qfun_selected_tot = np.empty((0))
@@ -719,7 +725,7 @@ def lmpc(
         print("solver fail to find the solution, the non-converged solution is used")
     end_timer = datetime.datetime.now()
     solver_time = (end_timer - start_timer).total_seconds()
-    print("solver time: {}".format(solver_time))
+    # print("solver time: {}".format(solver_time))
     return (
         u_pred,
         x_pred,

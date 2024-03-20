@@ -130,7 +130,7 @@ class OvertakeTrajPlanner:
         ) = self.solve_optimization_problem()
         end_timer = datetime.datetime.now()
         solver_time = (end_timer - start_timer).total_seconds()
-        print("local planner solver time: {}".format(solver_time))
+        # print("local planner solver time: {}".format(solver_time))
         target_traj_xglob = get_traj_xglob(target_traj_xcurv, track)
         bezier_line_xcurv = np.zeros((num_horizon_planner + 1, X_DIM))
         bezier_line_xcurv[:, 4:6] = bezier_xcurvs[direction_flag, :, :]
@@ -202,11 +202,15 @@ class OvertakeTrajPlanner:
             solution_xvar[index, :, :] = dict_traj[index]
             costs.append(dict_cost[index])
             solve_time[index] = dict_solve_time[index]
+        # compare each optimized trajectory with new standards
         cost_selection = []
         for index in range(num_veh + 1):
             cost_selection.append(0)
         for index in range(num_veh + 1):
+            # more progress
             cost_selection[index] = -10 * (solution_xvar[index, 4, -1] - solution_xvar[index, 4, 0])
+            # check collision - left
+            # TODO: isn't it necessary to check for other vehicles?
             if index == 0:
                 pass
             else:
@@ -221,6 +225,8 @@ class OvertakeTrajPlanner:
                         cost_selection[index] += 0
                     else:
                         cost_selection[index] += 100
+            # check collision - right
+            # TODO: isn't it necessary to check for other vehicles?
             if index == num_veh:
                 pass
             else:
@@ -235,15 +241,19 @@ class OvertakeTrajPlanner:
                         cost_selection[index] += 0
                     else:
                         cost_selection[index] += 100
+            # keep the same direction flag, if possible
             if old_direction_flag is None:
                 pass
             elif old_direction_flag == index:
                 pass
             else:
                 cost_selection[index] += 100
+        # use the trajectory that has the least cost
         direction_flag = cost_selection.index(min(cost_selection))
+        # if the selected trajectory is from a failed solver, print
         if costs[direction_flag] == float("inf"):
             print("= = = = = = = = = = OVERTAKE TRAJ PLANNER FAILED = = = = = = = = = =")
+        print("direction: " + str(direction_flag))
         traj_xcurv = solution_xvar[direction_flag, :, :].T
         return traj_xcurv, direction_flag, solve_time, solution_xvar
 
@@ -275,17 +285,18 @@ class OvertakeTrajPlanner:
                 + mtimes(self.racing_game_param.matrix_B, opti_uvar[:, index])
             )
             # min and max of vx, ey
-            opti.subject_to(opti_xvar[0, index + 1] <= 20.0)
-            opti.subject_to(opti_xvar[0, index + 1] >= 0.0)
+            opti.subject_to(opti_xvar[0, index + 1] <= 3.0)    # v_max
+            opti.subject_to(opti_xvar[0, index + 1] >= 0.0)    # v_min
             opti.subject_to(opti_xvar[5, index] <= track.width - 0.5 * veh_width)
-            opti.subject_to(opti_xvar[5, index] >= -track.width + 0.5 * veh_width)
+            opti.subject_to(opti_xvar[5, index] >= -track.width + 0.5 * veh_width)     # TODO: soft boundary
             # min and max of delta
-            opti.subject_to(opti_uvar[0, index] <= 0.5)
-            opti.subject_to(opti_uvar[0, index] >= -0.5)
+            opti.subject_to(opti_uvar[0, index] <= 0.5)    # delta_max
+            opti.subject_to(opti_uvar[0, index] >= -0.5)   # delta_min
             # min and max of a
             opti.subject_to(opti_uvar[1, index] <= 1.5)
             opti.subject_to(opti_uvar[1, index] >= -1.5)
             # constraint on the left, first line is the track boundary
+            # TODO: isn't it necessary to check for other vehicles?
             if pos_index == 0:
                 pass
             else:
@@ -306,6 +317,7 @@ class OvertakeTrajPlanner:
                 else:
                     pass
             # constraint on the right, last line is the track boundary
+            # TODO: isn't it necessary to check for other vehicles?
             if pos_index == num_veh:
                 pass
             else:
@@ -325,10 +337,13 @@ class OvertakeTrajPlanner:
                     opti.subject_to(diffey >= veh_width + safety_margin)
                 else:
                     pass
+        # lateral motion is avoided
         for index in range(num_horizon):
             if index > 1:
                 cost += 30 * ((opti_xvar[5, index] - opti_xvar[5, index - 1]) ** 2)
-        cost += -200 * (opti_xvar[4, -1] - opti_xvar[4, 0])  # 500
+        # get as much progress as possible
+        cost += -500 * (opti_xvar[4, -1] - opti_xvar[4, 0])  # 500 # 200
+        # follow the bezier curve, both laterally and longitudinally
         for j in range(num_horizon + 1):
             s_tmp = ego.xcurv[4] + 1.0 * j * ego.xcurv[0] * 0.1
             s_tmp = np.clip(s_tmp, bezier_xcurvs[pos_index, 0, 0], bezier_xcurvs[pos_index, -1, 0])

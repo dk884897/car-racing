@@ -146,12 +146,18 @@ def racing_overtake(args, file_number):
                                     pickle.dump(ego, handle, protocol=pickle.HIGHEST_PROTOCOL)
                         elif iter == 6:
                             # change the paramter in the following part will result in different initial setup for other vehicles
+                            # TODO: change the opponent setup here
                             for index in range(0, num_veh):
                                 veh_name = "car" + str(index + 1)
+                                # vehicles[index].set_state_curvilinear_func(
+                                #     t_symbol,
+                                #     (0.7 + index * 0.02) * t_symbol + 10.5 + index * 1.5,
+                                #     -0.5 + index * 0.3 + 0.0 * t_symbol,
+                                # )
                                 vehicles[index].set_state_curvilinear_func(
                                     t_symbol,
-                                    (0.7 + index * 0.02) * t_symbol + 10.5 + index * 1.5,
-                                    -0.5 + index * 0.3 + 0.0 * t_symbol,
+                                    (0.3) * t_symbol + 10.5 + index * 1.5,
+                                    0.2 + index * 0.1* pow(-1,index) + 0.0 * t_symbol,
                                 )
                                 vehicles[index].start_logging()
                                 simulator.add_vehicle(vehicles[index])
@@ -296,6 +302,7 @@ if __name__ == "__main__":
     parser.add_argument("--plotting", action="store_true")
     parser.add_argument("--animation", action="store_true")
     parser.add_argument("--direct-lmpc", action="store_true")
+    parser.add_argument("--pid", action="store_true")
     parser.add_argument("--sim-replay", action="store_true")
     parser.add_argument("--zero-noise", action="store_true")
     parser.add_argument("--diff-alpha", action="store_true")
